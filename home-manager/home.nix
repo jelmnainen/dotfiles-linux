@@ -1,6 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
+  imports = [
+    ./modules/anyrun.nix # app launcher
+  ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "johannes";
@@ -29,9 +32,10 @@
     pkgs.tree-sitter
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.bat
-    pkgs.nushell
     pkgs.zoxide
     pkgs.starship
+    pkgs.eww
+    inputs.snappy-switcher.packages.${pkgs.system}.default
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
@@ -40,12 +44,31 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
+  programs = {
+    neovim = {
+      enable = true;
+      defaultEditor = true;
+      viAlias = true;
+      vimAlias = true;
+    };
+
+    ncspot = {
+      enable = true;
+      settings = {
+        backend = "pulseaudio";
+      };
+    };
+
   };
+
+  programs.nushell = {
+    enable = true;
+    shellAliases = {
+      spotify = "ncspot";
+    };
+    extraConfig = builtins.readFile ./modules/nushell/config.nu;
+  };
+  xdg.configFile."nushell/scripts".source = ./modules/nushell/scripts;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -55,11 +78,15 @@
     # # symlink to the Nix store copy.
     # ".screenrc".source = dotfiles/screenrc;
 
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
+    ".config/snappy-switcher/config.ini" = {
+      source = dotfiles/snappy-switcher/config.ini;
+      force = true;
+    };
+
+    ".config/snappy-switcher/everforest.ini" = {
+      source = dotfiles/snappy-switcher/everforest.ini;
+      force = true;
+    };
   };
 
   # Home Manager can also manage your environment variables through
