@@ -7,6 +7,8 @@
   fg-col2: @nix-fg2@;
 
   background-color: transparent;
+
+  width: 600px;
 }
 
 window {
@@ -16,9 +18,8 @@ window {
   }
 
 mainbox {
-    padding: 20px;
     background-color: @bg-col;
-    border-color: @border-col;
+    border-color: @bg-col-ligth;
     border: 2px solid;
     border-radius: 10px;
     children: [imagebox, rightbox];
@@ -26,41 +27,41 @@ mainbox {
 
 imagebox {
     height: 200px;
-    background-image: url("~/.config/wallpapers/berries.png");
+    background-image: url("~/.config/wallpapers/berries.png", both);
+
 }
 
 rightbox {
     children: [inputbar, listview];
   }
 
-inputpar {
+inputbar {
     children: [prompt, entry];
     border-radius: 8px;
     padding: 8px;
+    margin: 10px;
     background-color: @bg-col;
   }
 
 prompt {
     background-color: @border-col;
     text-color: @bg-col;
-    padding: 6px 12px;
     border-radius: 6px;
     margin: 0px 10px 0px 0px;
+    padding: 6px 12px;
   }
 
 entry {
     padding: 6px;
     text-color: @fg-col;
     background-color: inherit;
-    placeholder: "Search...";
-    placeholder-color: @fg-col2;
   }
 
 listview {
     column: 1;
     lines: 10;
-    padding: 15px 0px 0px 0px;
-    spacing: 5px;
+    padding: 15px;
+    spacing: 10px;
     background-color: @bg-col;
   }
 

@@ -23,6 +23,7 @@ in
   imports = [
     ./modules/rofi/rofi.nix # app launcher
     ./modules/qt/qt.nix
+    ./modules/aider/aider.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -56,6 +57,7 @@ in
     pkgs.starship
     pkgs.eww
     inputs.snappy-switcher.packages.${pkgs.system}.default
+    pkgs.imagemagick
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
