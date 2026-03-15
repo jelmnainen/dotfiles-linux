@@ -1,8 +1,28 @@
-{ config, pkgs, inputs, ... }:
-
+{ config, pkgs, inputs, ... } :
+let
+  everofrest_colors = {
+    foreground = "#D3C6AA";
+    red = "#E67E80";
+    yellow = "#DBBC7F";
+    green = "#A7C080";
+    blue = "#7FBBB3";
+    purple = "#D699B6";
+    aqua = "#83C092";
+    orange = "#E69875";
+    background_0 = "#272E33";
+    background_1 = "#2E383C";
+    background_2 = "#374145";
+    background_3 = "#414B50";
+    background_4 = "#495156";
+    background_5 = "#4F5B58";
+  };
+in
 {
+  # Inject the color scheme to all modules
+  _module.args.themeColors = everofrest_colors;
   imports = [
-    ./modules/anyrun.nix # app launcher
+    ./modules/rofi/rofi.nix # app launcher
+    ./modules/qt/qt.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -83,7 +103,7 @@
       force = true;
     };
 
-    ".config/snappy-switcher/everforest.ini" = {
+    ".config/snappy-switcher/themes/everforest.ini" = {
       source = dotfiles/snappy-switcher/everforest.ini;
       force = true;
     };

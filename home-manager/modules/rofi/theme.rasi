@@ -1,0 +1,89 @@
+* {
+  bg-col: @nix-bg@;
+  bg-col-light: @nix-bg-light@;
+  border-col: @nix-border@;
+  selected-col: @nix-selected@;
+  fg-col: @nix-fg@;
+  fg-col2: @nix-fg2@;
+
+  background-color: transparent;
+}
+
+window {
+    fullscreen: true;
+    background-color: rgba(0, 0, 0, 0.11);
+    padding: 25% 35%;
+  }
+
+mainbox {
+    padding: 20px;
+    background-color: @bg-col;
+    border-color: @border-col;
+    border: 2px solid;
+    border-radius: 10px;
+    children: [imagebox, rightbox];
+}
+
+imagebox {
+    height: 200px;
+    background-image: url("~/.config/wallpapers/berries.png");
+}
+
+rightbox {
+    children: [inputbar, listview];
+  }
+
+inputpar {
+    children: [prompt, entry];
+    border-radius: 8px;
+    padding: 8px;
+    background-color: @bg-col;
+  }
+
+prompt {
+    background-color: @border-col;
+    text-color: @bg-col;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 0px 10px 0px 0px;
+  }
+
+entry {
+    padding: 6px;
+    text-color: @fg-col;
+    background-color: inherit;
+    placeholder: "Search...";
+    placeholder-color: @fg-col2;
+  }
+
+listview {
+    column: 1;
+    lines: 10;
+    padding: 15px 0px 0px 0px;
+    spacing: 5px;
+    background-color: @bg-col;
+  }
+
+element {
+    padding: 10px;
+    text-color: @fg-col;
+    border-radius: 8px;
+    background-color: @bg-col;
+  }
+
+element-icon {
+    size: 28px;
+    margin: 0px 15px 0px 0px;
+    background-color: transparent;
+  }
+
+element-text {
+  background-color: inherit;
+  vertical-align: 0.5;
+  text-color: inherit;
+  }
+
+element selected {
+    background-color: @selected-col;
+    text-color: @bg-col;
+  }
