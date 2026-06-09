@@ -1,0 +1,46 @@
+;;; DESKTOP CLOCK
+(defpoll time :interval "1s"
+  `date +"%H:%M"`)
+
+(defpoll date :interval "1h"
+  `LC_TIME=C date +"%A, %B %d %Y"`)
+
+(defwidget clock []
+  (box :class "clock-box" :orientation "v" :space-evenly false :halign "center"
+    (label :class "time" :text time)
+    (label :class "date" :text date)))
+
+(defwindow desktop-clock
+  :monitor 0
+  :geometry (geometry :x "0%"
+            :y "10%"
+            :width "600px"
+            :height "200px"
+            :anchor "top center")
+  :stacking "bg"
+  :exclusive "false"
+  (clock))
+
+;;; POWERMENU
+(defwidget powermenu-main []
+  (box  :class "powermenu-box"
+        :space-evenly true
+        (button :onclick "systemctl poweroff"
+                :class "danger"
+                (label :text ""))
+        (button :onclick "eww close powermenu"
+                :class "safe"
+                (label :text "")
+        )
+  )
+)
+
+(defwindow powermenu
+  :monitor 0
+  :stacking "overlay"
+  :geometry (geometry
+    :width "200px"
+    :height "100px"
+    :anchor "center"
+  )
+  (powermenu-main))
