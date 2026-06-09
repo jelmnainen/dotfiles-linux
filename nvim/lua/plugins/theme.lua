@@ -14,8 +14,8 @@ return {
     priority = 1000,
     config = function()
       require("everforest").setup({
-        transparent_background = true,
-        dim_interavtive_windows = true,
+        transparent_background_level = 2,
+        dim_interactive_windows = true,
       })
     end,
   },
