@@ -58,6 +58,23 @@ in
     pkgs.eww
     inputs.snappy-switcher.packages.${pkgs.system}.default
     pkgs.imagemagick
+    pkgs.ffmpegthumbnailer
+    pkgs.direnv
+    pkgs.devenv
+    pkgs.yazi
+
+    # try to enable add X11 compatibility for clipboard
+    pkgs.xclip
+
+    # Global programming language setups
+    pkgs.nodejs
+    pkgs.rustup
+    pkgs.gcc
+    pkgs.beancount
+    pkgs.fava
+    pkgs.statix
+    pkgs.jq
+    pkgs.p7zip
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
