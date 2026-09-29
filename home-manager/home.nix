@@ -24,12 +24,15 @@ in
     ./modules/rofi/rofi.nix # app launcher
     ./modules/qt/qt.nix
     ./modules/aider/aider.nix
+    inputs.niri.homeModules.niri
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "johannes";
-  home.homeDirectory = "/home/johannes";
-
+  home = {
+    username = "johannes";
+    homeDirectory = "/home/johannes";
+    stateVersion = "25.11"; # Please read the comment before changing.
+  };
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -37,7 +40,6 @@ in
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "25.11"; # Please read the comment before changing.
 
   fonts.fontconfig = {
     enable = true;
@@ -57,19 +59,20 @@ in
     pkgs.starship
     pkgs.eww
     inputs.snappy-switcher.packages.${pkgs.system}.default
-    pkgs.imagemagick
-    pkgs.ffmpegthumbnailer
+    pkgs.imagemagick # CLI image manipulation
+    pkgs.ffmpegthumbnailer # video thumbnailer
     pkgs.direnv
     pkgs.devenv
-    pkgs.yazi
+    pkgs.poppler # headless PDF rendering
+    pkgs.swaybg
+
+    pkgs.spotify
 
     # try to enable add X11 compatibility for clipboard
     pkgs.xclip
 
     # Global programming language setups
     pkgs.nodejs
-    pkgs.rustup
-    pkgs.gcc
     pkgs.beancount
     pkgs.fava
     pkgs.statix
@@ -89,6 +92,48 @@ in
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
+    };
+
+    yazi = {
+      enable = true;
+      plugins = {
+        bookmarks = pkgs.yaziPlugins.bookmarks;
+      };
+      initLua = ''
+        require("bookmarks"):setup({
+          persist = "all",
+          desc_format = "full",
+          notify = {
+            enable = true,
+            timeout = 3,
+            message = {
+              new = "New bookmark '<key>' -> '<folder>'",
+              delete = "Deleted bookmark binded to '<key>'"
+            }
+          }
+        })
+        '';
+      keymap = {
+        mgr = {
+          prepend_keymap = [
+            {
+              on = [ "M" ];
+              run = "plugin bookmarks save";
+              desc = "Save current position as bookmark";
+            }
+            {
+              on = [ "'" ];
+              run = "plugin bookmarks jump";
+              desc = "Jump to a bookmark";
+            }
+            {
+              on = [ "b" "d" ];
+              run = "plugin bookmarks delete";
+              desc = "Delete a bookmark";
+            }
+          ];
+        };
+      };
     };
 
     ncspot = {
@@ -127,6 +172,8 @@ in
       force = true;
     };
   };
+
+
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
