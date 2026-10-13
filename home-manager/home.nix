@@ -24,7 +24,8 @@ in
     ./modules/rofi/rofi.nix # app launcher
     ./modules/qt/qt.nix
     ./modules/aider/aider.nix
-    inputs.niri.homeModules.niri
+    inputs.niri.homeModules.config
+    ./niri.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.

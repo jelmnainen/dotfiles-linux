@@ -3,6 +3,7 @@ use ./scripts/rust.nu
 use scripts/emblica.nu *
 use scripts/sanoma.nu *
 use scripts/kubectl.nu *
+use scripts/secret.nu *
 
 alias archive = /usr/bin/zip
 

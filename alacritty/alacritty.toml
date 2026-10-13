@@ -15,7 +15,6 @@ dynamic_padding = false
 padding = { x = 20, y = 20 }
 opacity = 0.8
 blur = true
-startup_mode = "Maximized"
 
 
 [font]

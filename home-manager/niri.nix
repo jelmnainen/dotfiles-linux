@@ -1,16 +1,28 @@
 
 { config, pkgs, inputs, themeColors, ...}:
+let
+  borderRadius = 8.0;
+in
 {
   programs.niri = {
     settings = {
+
+      spawn-at-startup = [
+        { command = ["bash" "-c" "waybar"]; }
+        { command = ["awww-daemon"]; } # awww for wallpapers
+        { command = ["eww" "daemon"]; } # eww for desktop widgets
+        { command = ["bash" "-c" "sleep 1 && eww open desktop-clock"]; } # show desktop clock
+        { command = ["udiskie" "--tray" ]; }
+      ];
+
       prefer-no-csd = true;
 
       input = {
           warp-mouse-to-focus.enable = true; # Mouse follows focus changes
-          # Focus follows mouse
+          # Focus follows mouse but windows do not scroll based on mouse movement
           focus-follows-mouse = {
             enable = true;
-            max-scroll-amount = "100%";
+            max-scroll-amount = "0%";
           };
           keyboard = {
             xkb  = {
@@ -22,10 +34,16 @@
 
       layout = {
         gaps = 16;
+        focus-ring = {
+          enable = true;
+          active.color = themeColors.green;
+          width = 1;
+        };
         border = {
+          enable = true;
           width = 2;
           active.color = themeColors.green;
-          inactive.color = themeColors.background_0;
+          inactive.color = themeColors.background_2;
         };
         center-focused-column = "never";
         preset-column-widths = [
@@ -34,6 +52,25 @@
           { proportion = 0.66666; }
         ];
       };
+
+      window-rules = [
+        {
+          geometry-corner-radius = {
+            top-left = borderRadius;
+            top-right = borderRadius;
+            bottom-left = borderRadius;
+            bottom-right = borderRadius;
+          };
+          clip-to-geometry = true;
+        }
+        {
+          matches = [
+            { app-id = "Alacritty"; }
+            { app-id = "Spotify"; }
+          ];
+          default-column-width = { proportion = 0.5; };
+        }
+      ];
 
       binds = {
 
@@ -49,20 +86,20 @@
 
         # Mod-Shift-/, which is usually the same as Mod-?,
         # shows a list of important hotkeys.
-        "Mod+Shift+Slash" = {
+        "Mod+Shift+plus" = {
           hotkey-overlay.title = "Show hotkey commands";
           action.show-hotkey-overlay = {};
         };
 
-        "Mod+T" = {
+        "Mod+Return" = {
           action.spawn = "alacritty";
           hotkey-overlay.title="Open Terminal: alacritty";
         };
         "Mod+Space" = {
-          action.spawn = "fuzzel";
-          hotkey-overlay.title="Run an Application: fuzzel";
+          action.spawn =  [ "rofi" "-show" "drun" ] ;
+          hotkey-overlay.title="Run an Application: rofi";
         };
-        "Super+Alt+L" = {
+        "Super+Shift+Escape" = {
           hotkey-overlay.title = "Lock the Screen: swaylock";
           action.spawn = "swaylock";
         };
@@ -117,128 +154,63 @@
         };
         "XF86MonBrightnessDown" = {
             allow-when-locked=true;
-            action.spawn = "brightnessctl" "--class=backlight" "set" "10%-";
+            action.spawn = "brightnessctl --class=backlight set 10%-";
         };
 
         # Open/close the Overview: a zoomed-out view of workspaces and windows.
         # You can also move the mouse into the top-left hot corner,
         # or do a four-finger swipe up on a touchpad.
-        "Mod+O".action = {
+        "Mod+O"= {
           repeat = false;
-          toggle-overview = {};
+          action.toggle-overview = {};
         };
-        "Mod+Q".action = {
+        "Mod+Q" = {
           repeat=false;
-          close-window = {};
+          action.close-window = {};
         };
-        "Mod+Left".action.focus-column-left = {};
-        "Mod+Down".action.focus-window-down = {};
-        "Mod+Up".action.focus-window-up = {};
-        "Mod+Right".action.focus-column-right = {};
+        # Window focus
         "Mod+H".action.focus-column-left = {};
-        "Mod+J".action.focus-window-down = {};
-        "Mod+K".action.focus-window-up = {};
+        "Mod+J".action.focus-window-or-workspace-down = {};
+        "Mod+K".action.focus-window-or-workspace-up = {};
         "Mod+L".action.focus-column-right = {};
-
-        "Mod+Ctrl+Left".action.move-column-left = {};
-        "Mod+Ctrl+Down".action.move-window-down = {};
-        "Mod+Ctrl+Up".action.move-window-up = {};
-        "Mod+Ctrl+Right".action.move-column-right = {};
-        "Mod+Ctrl+H".action.move-column-left = {};
-        "Mod+Ctrl+J".action.move-window-down = {};
-        "Mod+Ctrl+K".action.move-window-up = {};
-        "Mod+Ctrl+L".action.move-column-right = {};
-
-        # Alternative commands that move across workspaces when reaching
-        # the first or last window in a column.
-        # Mod+J     { focus-window-or-workspace-down; }
-        # Mod+K     { focus-window-or-workspace-up; }
-        # Mod+Ctrl+J     { move-window-down-or-to-workspace-down; }
-        # Mod+Ctrl+K     { move-window-up-or-to-workspace-up; }
-
         "Mod+Home".action.focus-column-first = {};
         "Mod+End".action.focus-column-last = {};
-        "Mod+Ctrl+Home".action.move-column-to-first = {};
-        "Mod+Ctrl+End".action.move-column-to-last = {};
+        "Mod+MouseForward".action.focus-window-or-workspace-up = {};
+        "Mod+MouseBack".action.focus-window-or-workspace-down = {};
+        "Mod+WheelScrollDown" = {
+        	cooldown-ms=150;
+        	action.focus-column-left = {};
+        };
+        "Mod+WheelScrollUp" = {
+        	cooldown-ms=150;
+        	action.focus-column-right = {};
+        };
+        # Window manipulation
+        # "Mod+Shift+H".action.move-window-left = {};
+        # "Mod+Shift+L".action.move-window-right = {};
+        "Mod+Shift+J".action.move-window-down-or-to-workspace-down = {};
+        "Mod+Shift+K".action.move-window-up-or-to-workspace-up = {};
 
-        "Mod+Shift+Left".action.focus-monitor-left = {};
-        "Mod+Shift+Down".action.focus-monitor-down = {};
-        "Mod+Shift+Up".action.focus-monitor-up = {};
-        "Mod+Shift+Right".action.focus-monitor-right = {};
-        "Mod+Shift+H".action.focus-monitor-left = {};
-        "Mod+Shift+J".action.focus-monitor-down = {};
-        "Mod+Shift+K".action.focus-monitor-up = {};
-        "Mod+Shift+L".action.focus-monitor-right = {};
+        # Column manipulation
+        "Mod+Shift+Alt+Home".action.move-column-to-first = {};
+        "Mod+Shift+Alt+End".action.move-column-to-last = {};
+        "Mod+Shift+H".action.move-column-left = {};
+        "Mod+Shift+Alt+J".action.move-column-to-workspace-down = {};
+        "Mod+Shift+Alt+K".action.move-column-to-workspace-up = {};
+        "Mod+Shift+L".action.move-column-right = {};
 
-        "Mod+Shift+Ctrl+Left".action.move-column-to-monitor-left = {};
-        "Mod+Shift+Ctrl+Down".action.move-column-to-monitor-down = {};
-        "Mod+Shift+Ctrl+Up".action.move-column-to-monitor-up = {};
-        "Mod+Shift+Ctrl+Right".action.move-column-to-monitor-right = {};
-        "Mod+Shift+Ctrl+H".action.move-column-to-monitor-left = {};
-        "Mod+Shift+Ctrl+J".action.move-column-to-monitor-down = {};
-        "Mod+Shift+Ctrl+K".action.move-column-to-monitor-up = {};
-        "Mod+Shift+Ctrl+L".action.move-column-to-monitor-right = {};
-
-        # Alternatively, there are commands to move just a single window:
-        # Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
-        # ...
-
-        # And you can also move a whole workspace to another monitor:
-        # Mod+Shift+Ctrl+Left  { move-workspace-to-monitor-left; }
-        # ...
-
-        "Mod+Page_Down".action.focus-workspace-down = {};
-        "Mod+Page_Up".action.focus-workspace-up = {};
-        "Mod+U".action.focus-workspace-down = {};
-        "Mod+I".action.focus-workspace-up = {};
-        "Mod+Ctrl+Page_Down".action.move-column-to-workspace-down = {};
-        "Mod+Ctrl+Page_Up".action.move-column-to-workspace-up = {};
-        "Mod+Ctrl+U".action.move-column-to-workspace-down = {};
-        "Mod+Ctrl+I".action.move-column-to-workspace-up = {};
-
-        # Alternatively, there are commands to move just a single window:
-        # Mod+Ctrl+Page_Down { move-window-to-workspace-down; }
-        # ...
-
-        "Mod+Shift+Page_Down".action.move-workspace-down = {};
-        "Mod+Shift+Page_Up".action.move-workspace-up = {};
+        # Workspace manipulation
         "Mod+Shift+U".action.move-workspace-down = {};
         "Mod+Shift+I".action.move-workspace-up = {};
 
-        # You can bind mouse wheel scroll ticks using the following syntax.
-        # These binds will change direction based on the natural-scroll setting.
-        #
-        # To avoid scrolling through workspaces really fast, you can use
-        # the cooldown-ms property. The bind will be rate-limited to this value.
-        # You can set a cooldown on any bind, but it's most useful for the wheel.
-        "Mod+WheelScrollDown" = {
-        	cooldown-ms=150;
-        	action.focus-workspace-down = {};
-        };
-        "Mod+WheelScrollUp".action = {
-        	cooldown-ms=150;
-        	action.focus-workspace-up = {};
-        };
-        "Mod+Ctrl+WheelScrollDown" = {
+        "Mod+Shift+WheelScrollDown" = {
         	cooldown-ms=150;
         	action.move-column-to-workspace-down = {};
         };
-        "Mod+Ctrl+WheelScrollUp" = {
+        "Mod+Shift+WheelScrollUp" = {
         	cooldown-ms=150;
         	action.move-column-to-workspace-up = {};
         };
-
-        "Mod+WheelScrollRight".action.focus-column-right = {};
-        "Mod+WheelScrollLeft".action.focus-column-left = {};
-        "Mod+Ctrl+WheelScrollRight".action.move-column-right = {};
-        "Mod+Ctrl+WheelScrollLeft".action.move-column-left = {};
-
-        # Usually scrolling up and down with Shift in applications results in
-        # horizontal scrolling; these binds replicate that.
-        "Mod+Shift+WheelScrollDown".action.focus-column-right = {};
-        "Mod+Shift+WheelScrollUp".action.focus-column-left = {};
-        "Mod+Ctrl+Shift+WheelScrollDown".action.move-column-right = {};
-        "Mod+Ctrl+Shift+WheelScrollUp".action.move-column-left = {};
 
         # Similarly, you can bind touchpad scroll "ticks".
         # Touchpad scrolling is continuous, so for these binds it is split into
@@ -308,7 +280,7 @@
         # maximize-window-to-edges doesn't: the window expands to the edges of the screen.
         # This bind corresponds to normal window maximizing,
         # e.g. by double-clicking on the titlebar.
-        "Mod+M".action.maximize-window-to-edges = {};
+        # "Mod+M".action.maximize-window-to-edges = {};
 
         # Expand the focused column to space not taken up by other fully visible columns.
         # Makes the column "fill the rest of the space".
@@ -376,7 +348,11 @@
         # moving the mouse or pressing any other key.
         "Mod+Shift+P".action.power-off-monitors = {};
       };
+      hotkey-overlay = {
+        skip-at-startup = true;
+      };
     };
   };
+
 }
 

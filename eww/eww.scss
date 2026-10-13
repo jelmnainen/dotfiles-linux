@@ -31,10 +31,12 @@ $background_visual: #4c3743;
 }
 
 button {
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
-  border-radius: 10px;
+  border-radius: 5px;
   margin: 0 5px;
+  font-size: 1.5em;
+  background-color: RGBA(78, 87, 64, 0.5);
 }
 
 button.danger {
@@ -44,6 +46,15 @@ button.danger {
 
 button.danger:hover {
   background-color: $background_red;
+}
+
+button.attention {
+  border-color: $yellow;
+  color: $yellow;
+}
+
+button.attention:hover {
+  background-color: $background_yellow;
 }
 
 
