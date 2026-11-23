@@ -11,6 +11,7 @@ $env.PATH ++= [
   /nix/var/nix/profiles/default/bin
   ~/.nix-profile
   ~/.nix-profile/bin/
+  ~/.local/bin/
 ]
 
 # Zoxide for better cd

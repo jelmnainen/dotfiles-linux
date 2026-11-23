@@ -16,6 +16,11 @@ let
     background_4 = "#495156";
     background_5 = "#4F5B58";
   };
+  default_fonts = {
+    monospace = "JetBrainsMono Nerd Font";
+    sansSerif = "Inter";
+    serif = "Merriweather";
+  };
 in
 {
   # Inject the color scheme to all modules
@@ -45,9 +50,9 @@ in
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = [ "JetBrainsMono Nerd Font" ];
-      sansSerif = [ "Inter" ];
-      serif = [ "Merriweather" ];
+      monospace = [ default_fonts.monospace ];
+      sansSerif = [ default_fonts.sansSerif ];
+      serif = [ default_fonts.serif ];
     };
   };
   # The home.packages option allows you to install Nix packages into your
@@ -61,10 +66,8 @@ in
     pkgs.eww
     inputs.snappy-switcher.packages.${pkgs.system}.default
     pkgs.imagemagick # CLI image manipulation
-    pkgs.ffmpegthumbnailer # video thumbnailer
     pkgs.direnv
     pkgs.devenv
-    pkgs.poppler # headless PDF rendering
     pkgs.swaybg
 
     pkgs.spotify
@@ -79,6 +82,8 @@ in
     pkgs.statix
     pkgs.jq
     pkgs.p7zip
+
+    pkgs.ncdu # Interactive disk usage analyzer
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
@@ -97,6 +102,21 @@ in
 
     yazi = {
       enable = true;
+      settings = {
+        preview = {
+          max_width = 1920;
+          max_height = 1080;
+          image_filter = "lanczos3";
+          image_quality = 90;
+          uberzug_scale = 1;
+          plugin = {
+            prepend_previewers = [
+              { name = "*.psd"; run = "file"; }
+              { name = "*.PSD"; run = "file"; }
+            ];
+          };
+        };
+      };
       plugins = {
         bookmarks = pkgs.yaziPlugins.bookmarks;
       };
@@ -137,13 +157,113 @@ in
       };
     };
 
-    ncspot = {
-      enable = true;
-      settings = {
-        backend = "pulseaudio";
+  };
+
+  programs.opencode = {
+    enable = true;
+    settings = {
+      model = "emblica/ecode-fast-cheap-gemini3like";
+      provider = {
+        emblica = {
+          options = {
+            baseURL = "https://llm.ofc.emblica.fi/v1";
+            apiKey = "{env:EMBLICA_OPENCODE_API_KEY}";
+          };
+          models = {
+            "ecode-smarp-expensive-gemini3like" = {};
+            "ecode-fast-cheap-gemini3like" = {};
+          };
+        };
+      };
+    };
+  };
+
+  programs.waybar = {
+    enable = true;
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        spacing = 4;
+        modules-left = ["niri/workspaces"];
+        modules-center = [];
+        modules-right = [
+          "pulseaudio"
+          "network"
+          "clock"
+          "tray"
+        ];
+        clock = {
+          format = "{:%d.%m.%Y %H:%M}";
+          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+        };
+
+        pulseaudio = {
+            format = "{volume}% {icon}";
+            format-bluetooth = "{volume}% {icon}";
+            format-muted = "";
+            format-icons = {
+                default = ["" ""];
+            };
+            on-click = "pavucontrol";
+        };
+        network = {
+            format-wifi = "{essid} ";
+            format-ethernet = "";
+            format-disconnected = "Disconnected ⚠";
+        };
+        tray = {
+            spacing = 10;
+        };
       };
     };
 
+    style = ''
+      * {
+        font-family: ${default_fonts.monospace}, ${default_fonts.sansSerif};
+        font-size: 14px;
+      }
+
+      window#waybar {
+        color: ${everofrest_colors.yellow};
+        background-color: transparent;
+        transition-property: background-color;
+        transition-duration: .5s;
+      }
+
+      .modules-left, .modules-center, .modules-right {
+        background-color: ${everofrest_colors.background_2};
+        border-radius: 8px;
+        margin: 4px 8px;
+      }
+
+      #workspaces button {
+        padding: 0 8px;
+        margin: 5px;
+        color: ${everofrest_colors.yellow};
+        background: transparent;
+        border-radius: 4px;
+      }
+
+      #workspaces button:hover {
+        background: rgba(0, 0, 0, 0.2);
+        box-shadow: inherit;
+      }
+
+      #workspaces button.active {
+        color: ${everofrest_colors.background_2};
+        background-color: ${everofrest_colors.green};
+      }
+
+      #clock, #pulseaudio, #network, #tray, #window {
+        padding: 0 10px;
+        margin: 4px 2px;
+      }
+
+      #window {
+        font-weight: bold;
+      }
+    '';
   };
 
   programs.nushell = {

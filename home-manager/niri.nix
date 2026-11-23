@@ -15,6 +15,7 @@ in
         { command = ["udiskie" "--tray" ]; }
       ];
 
+
       prefer-no-csd = true;
 
       input = {
@@ -25,6 +26,7 @@ in
             max-scroll-amount = "0%";
           };
           keyboard = {
+            numlock = true;
             xkb  = {
               layout = "fi";
               options = "altwin:swap_lalt_lwin";
@@ -53,6 +55,13 @@ in
         ];
       };
 
+      layer-rules = [
+         {
+            matches = [{ namespace = "^overview-backdrop$"; }];
+            place-within-backdrop = true;
+         }
+      ];
+
       window-rules = [
         {
           geometry-corner-radius = {
@@ -69,6 +78,14 @@ in
             { app-id = "Spotify"; }
           ];
           default-column-width = { proportion = 0.5; };
+        }
+        {
+
+          matches = [
+            { app-id = "ueberzugpp"; }
+            { title = "ueberzugpp"; }
+          ];
+          open-focused = false;
         }
       ];
 
@@ -102,6 +119,11 @@ in
         "Super+Shift+Escape" = {
           hotkey-overlay.title = "Lock the Screen: swaylock";
           action.spawn = "swaylock";
+        };
+
+        "Mod+Escape" = {
+          hotkey-overlay.title = "Open powermenu";
+          action.spawn-sh = "eww open powermenu";
         };
 
 
@@ -335,10 +357,6 @@ in
         #
         # The allow-inhibiting=false property can be applied to other binds as well,
         # which ensures niri always processes them, even when an inhibitor is active.
-        "Mod+Escape" = {
-          allow-inhibiting = true;
-          action.toggle-keyboard-shortcuts-inhibit = {};
-        };
 
         # The quit action will show a confirmation dialog to avoid accidental exits.
         "Mod+Shift+E".action.quit = {};
